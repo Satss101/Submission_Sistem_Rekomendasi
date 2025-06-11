@@ -73,11 +73,11 @@ untuk detail informasi dari setiap feature adalah sebagai berikut
     - `critics_vote`: nilai rata-rata dari critics
     - `public_vote`: nilai rata-rata vote dari public
 
-Gambar persebaran avg_val
+**Gambar persebaran avg_val**
 ![avg_vote](./output_avg_vote.png)
 dari hasil visualisasi data kita mengetahui bahwa nilai terbanyak terdapat pada nilai 6 dengan jumlah movie sebanyak 10000. dilanjutkan dengan nilai 7 yang memiliki jumlah movie sebanyak 9500.
 
-Gambar nilai categories distribution
+**Gambar nilai categories distribution**
 ![genre](./output_genre.png)
 dari hasil visualisasi data kita mengetahui bahwa nilai terbanyak terdapat pada genre drama dengan 12000 movie, dilanjutnya dengan comedy, thriller, dan horror.
 
