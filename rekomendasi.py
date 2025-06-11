@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+import numpy as np
+import string
+import numpy as np
 
 # Load the dataset
 df = pd.read_csv('filmtv_movies.csv')
@@ -133,11 +139,6 @@ df_cbf[df_cbf.title.eq('The Adventures of Don Juan')]
 
 # Mendapatkan rekomendasi restoran yang mirip dengan KFC
 title_recommendations('The Adventures of Don Juan')
-
-# importing necessary libraries for deep learning
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
 
 # copy dataframe untuk cross validation
 df_cv = df_set.copy()
@@ -314,7 +315,6 @@ plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
 
-import numpy as np
 # Pilih user acak (dalam bentuk string, bukan integer)
 user_id = df_cv_first.user.sample(1).iloc[0]
 user_watched_movie = df_cv_first[df_cv_first.user == user_id]
