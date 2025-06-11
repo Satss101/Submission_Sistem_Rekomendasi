@@ -5,7 +5,7 @@ data : [kaggle](https://www.kaggle.com/datasets/stefanoleone992/filmtv-movies-da
 ## Project Overview
 Film adalah bentuk seni visual yang menggunakan gambar bergerak (moving images) untuk menceritakan sebuah kisah, menyampaikan ide, atau menghibur penonton. Istilah "film" berasal dari kata "filmstrip" (seluloid), yaitu material fisik yang dahulu digunakan untuk merekam gambar dalam industri sinema. sistem rekomendasi dapat memberikan rekomendasi personalisasi kepada pengguna berdasarkan preferensi, perilaku, atau data historis mereka. Sistem ini dapat digunakan di berbagai bidang seperti e-commerce, konten digital (film/musik), buku, atau layanan lainnya.
 
-Sistem rekomendasi dalam bidang film bertujuan untuk meningkatkan pengalaman pengguna dengan menyarankan konten yang relevan berdasarkan preferensi mereka. Berikut beberapa fungsi utamanya:
+Sistem rekomendasi dalam bidang film penting diselesaikan karena memiliki tujuan untuk meningkatkan pengalaman pengguna dengan menyarankan konten yang relevan berdasarkan preferensi mereka. Berikut beberapa fungsi utamanya:
 1. Personalisasi Konten
 2. Meningkatkan Engagement Pengguna
 3. Mengatasi Overload Informasi
@@ -83,18 +83,20 @@ dari hasil visualisasi data kita mengetahui bahwa nilai terbanyak terdapat pada 
 
 ## Data Preparation
 Proses data preparation dilakukan untuk mempersiapkan data sebelum masuk ke tahap modeling. tahap data preparation adalah sebagai berikut :
-1. cek duplikasi
+1. **cek duplikasi**
 mengecek duplikasi digunakan agar tidak ada nilai yang double terutama pada bagian feature title. jika ada nilai double pada feature title akan membuat redundan data sehingga kita tidak dapat memastikan title tersebut memiliki nilai a atau nilai b. mengecek duplikasi dapat dilakukan dengan `df.duplicated().sum()` hasil dari pengecekan menunjukan bahwa **tidak ada nilai duplikat pada dataframe**.
-2. cek dan menangani missing values
+2. **cek dan menangani missing values**
 mengecek missing values dilakukan agar tidak ada data yang kosong terutama pada feature yang penting seperti title. jika ada nilai yang kosong akan susah bagi developer dalam membuat model rekomendasi. untuk mengecek missing value dilakukan cara `df_set.isnull().sum()` hasil dari pengecekan tersebut terdapat nilai duplikasi pada data. penanganan yang kita lakukan adalah melakukan drop nilai dengan cara `df_set.dropna(inplace=True)` hasil drop menunjukkan perubahan jumlah baris yang awalnya **41399** menjadi **39742**.
-3. cek dan menangani abnormal values
+3. **cek dan menangani abnormal values**
 mengecek abnormal values dilakukan agar tidak ada nilai yang berbeda dari nilai lainnya. untuk mengecek informasi tersebut kita gunakan program 
 `df_set.genre.unique()`
 untuk mengecek feature genre. pada feature genre tidak ada informasi yang aneh.
 `df_set.directors.unique().tolist()[:10]` 
-untuk mengecek feature directors. pada feature directors diketahui ada film yang memiliki satu director, dua director, dan diatasnya. dalam sistem rekomendasi ini kita hanya mengambil direktru utama saja, untuk co-director tidak kita tambahkan. penting untuk menampilkan satu direktur saja pada feature director karena feature ini akan dilakukan encoding. nilai pengecekan ternyata ada **2111**, baris tersebut kita ubah dengan program :
-`df_set['directors'] = df_set['directors'].apply(lambda x: x.split(',')[0].strip())` 
-dari hasil tersebut kita mendapatkan feature directors hanya satu nama saja.
+untuk mengecek feature directors. pada feature directors diketahui ada film yang memiliki satu director, dua director, dan diatasnya. dalam sistem rekomendasi ini kita hanya mengambil direktru utama saja, untuk co-director tidak kita tambahkan. penting untuk menampilkan satu direktur saja pada feature director karena feature ini akan dilakukan encoding. nilai pengecekan ternyata ada **2111**. Untuk mengatasi hal tersebut kita harus drop baris yang memiliki lebih dari 2 direoctor. Dari hasil tersebut kita mendapatkan feature directors hanya satu nama saja. Dengan nilai baris yang awalnya **3** menjadi **4**
+4. **Encoding** : dilakukan untuk menyandikan `here` dan `here` ke dalam indeks integer. Tahapan ini diperlukan karena kedua data tersebut berisi integer yang tidak berurutan (acak) dan gabungan string. Untuk itu perlu diubah ke dalam bentuk indeks.
+5. **Randomize Dataset** : pengacakan data agar distribusi datanya menjadi random. Pengacakan data bertujuan untuk mengurangi varians dan memastikan bahwa model tetap umum dan *overfit less*. Pengacakan data juga memastikan bahwa data yang digunakan saat validasi merepresentasikan seluruh distribusi data yang ada.
+6. **Data Standardization** : Pada data rating yang digunakan pada proyek ini berada pada rentang 0 hingga 10. Penerapan standarisasi menjadi rentang 0 hingga 1 dapat mempermudah saat proses training. Hal ini dikarenakan variabel yang diukur pada skala yang berbeda tidak memberikan kontribusi yang sama pada model fitting & fungsi model yang dipelajari dan mungkin berakhir dengan menciptakan bias jika data tidak distandarisasi terlebih dulu.
+7. **Data Splitting** : dataset dibagi menjadi 2 bagian, yaitu data yang akan digunakan untuk melatih model (sebesar 80%) dan data untuk memvalidasi model (sebesar 20%). Tujuan dari pembagian data uji dan validasi tidak lain adalah untuk proses melatih model serta mengukur kinerja model yang telah didapatkan.
 
 ## Modeling and Result
 ### Model Development dengan Content Based Filtering
@@ -116,6 +118,23 @@ Kekurangan _Cosine Similarity_:
 - Perbedaan dalam magnitudo vektor tidak sepenuhnya diperhitungkan, yang berarti nilai-nilai yang sangat berbeda dapat dianggap mirip jika arah vektornya sama.
 
 ### Model Development dengan Collaborative Filtering
-Collaborative filtering bergantung pada pendapat komunitas pengguna. Ia tidak memerlukan atribut untuk setiap itemnya seperti pada sistem berbasis konten.
+Collaborative filtering bergantung pada pendapat komunitas pengguna. Ia tidak memerlukan atribut untuk setiap itemnya seperti pada sistem berbasis konten. Model collaborative filtering menggunakan penghitunngan skor kecocokan antara pengguna dan resto dengan teknik embedding. Pertama, kita melakukan proses embedding. Selanjutnya, lakukan operasi perkalian dot product antara embedding.  kita juga dapat menambahkan bias untuk setiap variable. Skor kecocokan ditetapkan dalam skala [0,1] dengan fungsi aktivasi sigmoid. Model Collaboratuve filtering ini menggunakan Binary Crossentropy untuk menghitung loss function. Adam (Adaptive Moment Estimation) sebagai optimizer, dan root mean squared error (RMSE) sebagai metrics evaluation.
 
 ## Evaluation
+metrik RMSE (Root Mean Square Error) digunakan untuk mengevaluasi kinerja model yang dihasilkan. RMSE adalah cara standar untuk mengukur kesalahan model dalam memprediksi data kuantitatif. Root Mean Squared Error (RMSE) mengevaluasi model regresi linear dengan mengukur tingkat akurasi hasil perkiraan suatu model. RMSE dihitung dengan mengkuadratkan error (prediksi – observasi) dibagi dengan jumlah data (= rata-rata), lalu diakarkan. Perhitungan RMSE ditunjukkan pada rumus berikut ini.
+
+![RMSE](rms.jpg)
+
+`RMSE` = nilai root mean square error
+
+`y`  = nilai hasil observasi
+
+`ŷ`  = nilai hasil prediksi
+
+`i`  = urutan data
+
+`n`  = jumlah data
+
+Nilai RMSE rendah menunjukkan bahwa variasi nilai yang dihasilkan oleh suatu model prakiraan mendekati variasi nilai obeservasinya. RMSE menghitung seberapa berbedanya seperangkat nilai. Semakin kecil nilai RMSE, semakin dekat nilai yang diprediksi dan diamati. Berikut adalah hasil dari pelatihan dan validasi :
+![result](result.png)
+Hasil pelatihan tersebut menunjukkan bahwa model mendapatkan nilai RMSE saat training pada nilai 0.058 dan nilai RMSE saat validasi pada nilai 0.157. dari hasil tersebut model sudah mendapatkan hasil yang bagus, namun model masih dapat ditingkatkan lagi.
