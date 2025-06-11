@@ -74,6 +74,7 @@ untuk detail informasi dari setiap feature adalah sebagai berikut
     - `public_vote`: nilai rata-rata vote dari public
 
 **Gambar persebaran avg_val**
+
 ![avg_vote](./output_avg_vote.png)
 dari hasil visualisasi data kita mengetahui bahwa nilai terbanyak terdapat pada nilai 6 dengan jumlah movie sebanyak 10000. dilanjutkan dengan nilai 7 yang memiliki jumlah movie sebanyak 9500.
 
